@@ -1,0 +1,24 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}",             // Workspace folders
+                "/usr/include/wx-3.2/wx"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/g++",        // Path to your compiler
+            "intelliSenseMode": "gcc-x64",    // IntelliSense mode
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}",
+                    "/usr/include/wx-3.2/wx"          // Ensure browse path is also updated
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
+        }
+    ]
+}
