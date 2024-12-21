@@ -14,7 +14,7 @@ void update_song_list(const char songs_dir[100]){
     struct dirent *dir;
     DIR *d = opendir(songs_dir);
     if (d) {
-       num_songs = 0;
+        num_songs = 0;
         while ((dir = readdir(d)) != NULL) {
             char file[100];
             strcpy(file, dir->d_name);
@@ -37,6 +37,7 @@ void update_song_list(const char songs_dir[100]){
 
 void play_song(){
     result = ma_sound_init_from_file(&engine, songs[current_song], 0, NULL, NULL, &sound);
+    MainFrame->song_name_text->SetLabel("Current Song:\n" + (string)songs[current_song]);
     if (song_paused){
         ma_sound_seek_to_pcm_frame(&sound, paused_pcm);
     }
@@ -68,13 +69,34 @@ void song_toggle(wxCommandEvent& event){
     }
 }
 
-void song_end_check(){
+//Function that runs on seperate thread and checks and responds to UI/Sound Engine events.
+void status_check_thread(){
     while (true){
         if (playing_song && !song_paused && ma_sound_at_end(&sound)){
-            stop_song();
-            playing_song = false;
-            current_song++;
-            play_song();
+            wxCommandEvent null;
+            next_song_switch(null);
         }
+        ma_sound_set_volume(&sound, MainFrame->volume_slider->GetValue()/100.0);
+        usleep(10000);
+    }
+}
+
+void next_song_switch(wxCommandEvent& event){
+    if (playing_song && !song_paused){
+        playing_song = false;
+        stop_song();
+        current_song++;
+        if (current_song == num_songs){ current_song = 0; }
+        play_song();
+    }
+}
+
+void prev_song_switch(wxCommandEvent& event){
+    if (playing_song && !song_paused){
+        playing_song = false;
+        stop_song();
+        current_song--;
+        if (current_song < 0){ current_song = num_songs-1; }
+        play_song();
     }
 }

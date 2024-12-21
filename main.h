@@ -25,6 +25,7 @@ class Main_Frame : public wxFrame{
     public:
     Main_Frame(const wxString& title);
     wxStaticText* song_name_text;
+    wxSlider* volume_slider;
 };
 
 class App : public wxApp
@@ -42,6 +43,8 @@ void play_song();
 void song_toggle(wxCommandEvent& event);
 
 void pause_song(wxCommandEvent& event);
+
+void status_check_thread();
 
 void next_song_switch(wxCommandEvent& event);
 

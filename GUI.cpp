@@ -1,32 +1,44 @@
 #include "song_manager.cpp"
 
 Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
-    SetBackgroundColour(wxColour(99,99,99));
+    SetBackgroundColour(wxColour(21, 56, 77));
     wxPanel* panel = new wxPanel(this);
     wxButton* button_left = new wxButton(panel, wxID_ANY, "Previous Song", wxPoint(50,350), wxSize(140,40));
-    wxButton* button_right = new wxButton(panel, wxID_ANY, "Next Song", wxPoint(650,350), wxSize(140,40));
-    wxButton* button_play = new wxButton(panel, wxID_ANY, "Play/Stop", wxPoint(400,350), wxSize(140,40));
-    wxButton* button_pause = new wxButton(panel, wxID_ANY, "Pause", wxPoint(250,350), wxSize(140,40));
+    wxButton* button_pause = new wxButton(panel, wxID_ANY, "Pause", wxPoint(240,350), wxSize(140,40));
+    wxButton* button_play = new wxButton(panel, wxID_ANY, "Play/Stop", wxPoint(420,350), wxSize(140,40));
+    wxButton* button_right = new wxButton(panel, wxID_ANY, "Next Song", wxPoint(610,350), wxSize(140,40));
 
     wxStaticText* title_text = new wxStaticText(panel, wxID_ANY, "Small Simple Song Player", wxPoint(0, 20), wxSize(800, 100), wxALIGN_CENTRE_HORIZONTAL);
-    title_text->SetFont(wxFont(24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
-    title_text->SetForegroundColour(*wxRED);
+    title_text->SetFont(wxFont(42, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    title_text->SetForegroundColour(wxColor(24, 123, 181));
     
-    song_name_text = new wxStaticText(panel, wxID_ANY, "Current Song: ", wxPoint(0, 80), wxSize(800, 120), wxALIGN_CENTRE_HORIZONTAL);
+    song_name_text = new wxStaticText(panel, wxID_ANY, "Current Song:\nNone Playing", wxPoint(0, 120), wxSize(800, 120), wxALIGN_CENTRE_HORIZONTAL);
     song_name_text->SetFont(wxFont(24, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    song_name_text->SetForegroundColour(wxColor(200, 200, 200));
+
+    wxStaticText* volume_title_text = new wxStaticText(panel, wxID_ANY, "Volume:", wxPoint(0, 240), wxSize(800, 100), wxALIGN_CENTRE_HORIZONTAL);
+    volume_title_text->SetFont(wxFont(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    volume_title_text->SetForegroundColour(wxColor(255, 255, 255));
+
+    volume_slider = new wxSlider(panel, wxID_ANY, 100, 0, 100, wxPoint(250, 270), wxSize(300, 50), wxSL_HORIZONTAL);
+    cout << volume_slider->GetValue();
 
     button_play->Bind(wxEVT_BUTTON, &song_toggle);
     button_pause->Bind(wxEVT_BUTTON, &pause_song);
-
+    button_right->Bind(wxEVT_BUTTON, &next_song_switch);
+    button_left->Bind(wxEVT_BUTTON, &prev_song_switch);
+    
+    thread sc_thread = thread(status_check_thread);
+    sc_thread.detach();
 }
 
 bool App::OnInit() {
     result = ma_engine_init(NULL, &engine);
-    thread song_end_thread = thread(song_end_check);
-    song_end_thread.detach();
+
     cout << "Enter Song Directory: ";
     cin >> song_dir;
     update_song_list(song_dir);
+
     MainFrame = new Main_Frame("Small Simple Song Player");
     MainFrame->SetClientSize(800,600);
     MainFrame->Center();
