@@ -15,6 +15,7 @@
                 "-ldl",
                 "-I/usr/lib/wx/include/gtk3-unicode-3.2",
                 "-I/usr/include/wx-3.2",
+                "-I/user/include/wx-3.2/wx/defs.h",
                 "-DWXUSINGDLL",
                 "-D__WXGTK3__",
                 "-D__WXGTK__",
@@ -25,7 +26,8 @@
                 "-lwx_gtk3u_core-3.2",
                 "-lwx_baseu_xml-3.2",
                 "-lwx_baseu_net-3.2",
-                "-lwx_baseu-3.2"
+                "-lwx_baseu-3.2",
+                "-g"
             ],
             "options": {
                 "cwd": "${fileDirname}"
