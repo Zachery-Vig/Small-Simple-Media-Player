@@ -5,11 +5,12 @@
 #include <thread>
 #include <wx-3.2/wx/wx.h>
 #include <wx-3.2/wx/event.h>
+#include <wx-3.2/wx/timer.h>
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
+#include <chrono>
 
 using std::string;
-
 
 ma_result result;
 ma_sound sound;
@@ -23,6 +24,8 @@ class Main_Frame : public wxFrame{
     wxStaticText* song_name_text;
     wxSlider* volume_slider;
     wxSlider* song_progress_bar;
+    wxButton* button_play;
+    wxTimer* timer;
 };
 
 class App : public wxApp
@@ -39,11 +42,11 @@ void play_song();
 
 void song_toggle(wxCommandEvent& event);
 
-void pause_song(wxCommandEvent& event);
+void pause_song();
 
 void status_check_thread();
 
-void next_song_switch(wxCommandEvent& event);
+void next_song_switch();
 
 void prev_song_switch(wxCommandEvent& event);
 

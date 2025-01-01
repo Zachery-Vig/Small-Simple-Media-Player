@@ -2,13 +2,16 @@
 
 Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title) {
     SetBackgroundColour(wxColour(21, 56, 77));
+    
     wxPanel* panel = new wxPanel(this);
-    wxButton* button_left = new wxButton(panel, wxID_ANY, "Previous Song", wxPoint(50,350), wxSize(140,40));
-    wxButton* button_pause = new wxButton(panel, wxID_ANY, "Pause", wxPoint(240,350), wxSize(140,40));
-    wxButton* button_play = new wxButton(panel, wxID_ANY, "Play/Stop", wxPoint(420,350), wxSize(140,40));
-    wxButton* button_right = new wxButton(panel, wxID_ANY, "Next Song", wxPoint(610,350), wxSize(140,40));
-    //button_left->SetBackgroundColour(wxColor(0, 145, 235));
-
+    wxButton* button_left = new wxButton(panel, wxID_ANY, "<<<", wxPoint(50,400), wxSize(80,40));
+    wxButton* button_stop = new wxButton(panel, wxID_ANY, "Stop", wxPoint(240,400), wxSize(80,40));
+    button_play = new wxButton(panel, wxID_ANY, "Play", wxPoint(420,400), wxSize(80,40));
+    wxButton* button_right = new wxButton(panel, wxID_ANY, ">>>", wxPoint(650,400), wxSize(80,40));
+    button_play->SetBackgroundColour(wxColor(0, 36, 94));
+    button_left->SetBackgroundColour(wxColor(0, 36, 94));
+    button_right->SetBackgroundColour(wxColor(0, 36, 94));
+    button_stop->SetBackgroundColour(wxColor(0, 36, 94));
     wxStaticText* title_text = new wxStaticText(panel, wxID_ANY, "Small Simple Song Player", wxPoint(0, 20), wxSize(800, 100), wxALIGN_CENTRE_HORIZONTAL);
     title_text->SetFont(wxFont(42, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     title_text->SetForegroundColour(wxColor(24, 123, 181));
@@ -23,19 +26,18 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
 
     volume_slider = new wxSlider(panel, wxID_ANY, 100, 0, 100, wxPoint(250, 270), wxSize(300, 50), wxSL_HORIZONTAL);
 
-    song_progress_bar = new wxSlider(panel, wxID_ANY, 0, 0, 100, wxPoint(100, 300), wxSize(600, 50), wxSL_HORIZONTAL);
+    song_progress_bar = new wxSlider(panel, wxID_ANY, 0, 0, 100, wxPoint(100, 340), wxSize(600, 50), wxSL_HORIZONTAL);
 
     button_play->Bind(wxEVT_BUTTON, &song_toggle);
-    button_pause->Bind(wxEVT_BUTTON, &pause_song);
-    button_right->Bind(wxEVT_BUTTON, &next_song_switch);
+    button_stop->Bind(wxEVT_BUTTON, &stop_song_call);
+    button_right->Bind(wxEVT_BUTTON, &next_song_switch_call);
     button_left->Bind(wxEVT_BUTTON, &prev_song_switch);
 
     //Tells Backend when user tries to manually update progress bar and to not set automatically.
     song_progress_bar->Bind(wxEVT_COMMAND_SLIDER_UPDATED, [this](wxCommandEvent& event) {
             if (follow_song_progress){
                 follow_song_progress = false;
-                wxCommandEvent null;
-                pause_song(null);
+                pause_song();
             }
        });
 
@@ -46,8 +48,10 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
         }
        });
 
-    std::thread sc_thread(status_check_thread);
-    sc_thread.detach();
+    //Timer used for song end check, setting volume, etc (Tried to implement multi-threading but due to wxwidgets lack of thread safety this was simpilar to implement.)
+    timer = new wxTimer(this);
+    timer->Start(30);
+    Bind(wxEVT_TIMER, &status_check);
 }
 
 bool App::OnInit() {
