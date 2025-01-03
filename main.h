@@ -3,12 +3,12 @@
 #include <string.h>
 #include <math.h>
 #include <thread>
+#include <wx-3.2/wx/popupwin.h>
 #include <wx-3.2/wx/wx.h>
 #include <wx-3.2/wx/event.h>
 #include <wx-3.2/wx/timer.h>
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
-#include <chrono>
 
 using std::string;
 
@@ -34,20 +34,28 @@ class App : public wxApp
     bool OnInit();
 };
 
+class Input_Window : public wxPopupTransientWindow {
+    public:
+    wxTextCtrl* song_dir_input;
+    wxStaticText* error_text;
+    void submit_song_dir(wxCommandEvent& event);
+    Input_Window(wxWindow* parent);
+};
+
 Main_Frame* MainFrame;
+Input_Window* song_dir_window;
 
-void update_song_list(const char songs_dir[100]);
+char songs[10][100];
+char song_dir[100];
+int num_songs = 0;
+int current_song = 0;
 
-void play_song();
+//Main status variables of current song to check if song is playing (true,false), if song is stopped (false,false), and if song is paused (true,true) 
+bool playing_song = false;
+bool song_paused = false;
 
-void song_toggle(wxCommandEvent& event);
+ma_uint64 song_total_pcm = 100000000;
+bool follow_song_progress = true;
+bool user_updated_progress = false;
 
-void pause_song();
-
-void status_check_thread();
-
-void next_song_switch();
-
-void prev_song_switch(wxCommandEvent& event);
-
-void test_func(wxCommandEvent& event);
+bool song_toggle_status = true;

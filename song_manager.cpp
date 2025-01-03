@@ -1,25 +1,7 @@
 #include "main.h"
 
-char songs[10][100];
-char song_dir[100];
-
-int current_song = 0;
-int num_songs = 0;
-
-bool playing_song = false;
-bool song_paused = false;
-bool song_thread_started = false;
-
-ma_uint64 song_total_pcm = 100000000;
-bool follow_song_progress = true;
-bool user_updated_progress = false;
-
-bool song_toggle_status = true;
-
-//                               play_song, stop song, pause song, next song.
-bool function_call_requests[] = {false,false,false,false}; //main thread checks for function requests so all functions like playing,stopping, etc are done on the main thread for thread safety.
-
-void update_song_list(const char songs_dir[100]){
+//Scans user specified directory for songs and adds their paths to the songs array. Returns status of directory read, -1 for directory not existing, -2 for directory for no songs in directory, and 0 for success.
+int update_song_list(const char songs_dir[100]){
     struct dirent *dir;
     DIR *d = opendir(songs_dir);
     if (d) {
@@ -38,8 +20,13 @@ void update_song_list(const char songs_dir[100]){
             }
         }
         closedir(d);
+        if (num_songs == 0){
+            return -2;
+        } else {
+            return 0;
+        }
     } else {
-        std::cout << "ERROR: Invalid Directory '" << songs_dir << "'" << std::endl;
+        return -1;
     }
 }
 
@@ -91,19 +78,11 @@ void song_toggle(wxCommandEvent& event){
     }
 }
 
-//Function that runs on seperate thread and checks and responds to UI/Sound Engine events.
-void status_check_thread(){
-    while (true){
-    }
-}
-
 void next_song_switch(){
-    if (playing_song && !song_paused){
-        stop_song();
-        current_song++;
-        if (current_song == num_songs){ current_song = 0; }
-        play_song();
-    }
+    stop_song();
+    current_song++;
+    if (current_song == num_songs){ current_song = 0; }
+    play_song();
 }
 
 void next_song_switch_call(wxCommandEvent& event){
@@ -111,12 +90,10 @@ void next_song_switch_call(wxCommandEvent& event){
 }
 
 void prev_song_switch(wxCommandEvent& event){
-    if (playing_song && !song_paused){
-        stop_song();
-        current_song--;
-        if (current_song < 0){ current_song = num_songs-1; }
-        play_song();
-    }
+    stop_song();
+    current_song--;
+    if (current_song < 0){ current_song = num_songs-1; }
+    play_song();
 }
 
 void status_check(wxTimerEvent& event){
@@ -130,8 +107,8 @@ void status_check(wxTimerEvent& event){
         MainFrame->song_progress_bar->SetValue(ceil((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
     }
     else if (user_updated_progress){
-        if (song_paused){
-            paused_pcm = ceil((MainFrame->song_progress_bar->GetValue()/100.0)*song_total_pcm);
+        if (song_paused || !playing_song){
+            paused_pcm = floor((MainFrame->song_progress_bar->GetValue()/100.0)*song_total_pcm);
             play_song();
         }
         song_toggle_status = true;
