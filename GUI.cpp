@@ -7,12 +7,12 @@ Input_Window::Input_Window(wxWindow* parent) : wxPopupTransientWindow(parent, wx
     enter_dir_text->SetFont(wxFont(16, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     enter_dir_text->SetForegroundColour(wxColor(255, 255, 255));
 
-    song_dir_input = new wxTextCtrl(popup_panel, wxID_ANY, "", wxPoint(50, 75), wxSize(300, 20));
+    song_dir_input = new wxTextCtrl(popup_panel, wxID_ANY, "", wxPoint(50, 65), wxSize(300, 30));
     song_dir_input->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
     song_dir_input->SetFocus();
 
-    wxButton* button_close = new wxButton(popup_panel, wxID_ANY, "Cancel", wxPoint(120,110), wxSize(80,40));
-    wxButton* button_submit = new wxButton(popup_panel, wxID_ANY, "Enter", wxPoint(210,110), wxSize(80,40));
+    wxButton* button_close = new wxButton(popup_panel, wxID_ANY, "Cancel", wxPoint(120,110), wxSize(70,35));
+    wxButton* button_submit = new wxButton(popup_panel, wxID_ANY, "Enter", wxPoint(210,110), wxSize(70,35));
 
     button_submit->Bind(wxEVT_BUTTON, &Input_Window::submit_song_dir, this);
     button_close->Bind(wxEVT_BUTTON, [this](wxCommandEvent& event) {
