@@ -1,6 +1,6 @@
 #include "song_manager.cpp"
 
-Input_Window::Input_Window(wxWindow* parent) : wxPopupTransientWindow(parent, wxBORDER_SIMPLE) {
+Input_Window::Input_Window(wxWindow* parent) : wxPopupTransientWindow(parent) {
     wxPanel* popup_panel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(400, 200));
 
     wxStaticText* enter_dir_text = new wxStaticText(popup_panel, wxID_ANY, "Enter Songs Directory", wxPoint(0, 10), wxSize(400, 100), wxALIGN_CENTRE_HORIZONTAL);
@@ -53,11 +53,14 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
     wxButton* button_stop = new wxButton(panel, wxID_ANY, "Stop", wxPoint(240,400), wxSize(80,40));
     button_play = new wxButton(panel, wxID_ANY, "Play", wxPoint(420,400), wxSize(80,40));
     wxButton* button_right = new wxButton(panel, wxID_ANY, "->", wxPoint(650,400), wxSize(80,40));
+
+    wxButton* button_reset = new wxButton(panel, wxID_ANY, "Reset Playlist", wxPoint(50,270), wxSize(100,40));
     
     button_play->SetBackgroundColour(wxColor(0, 36, 94));
     button_left->SetBackgroundColour(wxColor(0, 36, 94));
     button_right->SetBackgroundColour(wxColor(0, 36, 94));
     button_stop->SetBackgroundColour(wxColor(0, 36, 94));
+    button_reset->SetBackgroundColour(wxColor(0, 36, 94));
     
     wxStaticText* title_text = new wxStaticText(panel, wxID_ANY, "Small Simple Song Player", wxPoint(0, 20), wxSize(800, 100), wxALIGN_CENTRE_HORIZONTAL);
     title_text->SetFont(wxFont(42, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
@@ -80,6 +83,7 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
     button_stop->Bind(wxEVT_BUTTON, &stop_song_call);
     button_right->Bind(wxEVT_BUTTON, &next_song_switch_call);
     button_left->Bind(wxEVT_BUTTON, &prev_song_switch);
+    button_reset->Bind(wxEVT_BUTTON, &reset_playlist);
 
     //Tells Backend when user tries to manually update progress bar and to not set automatically.
     song_progress_bar->Bind(wxEVT_COMMAND_SLIDER_UPDATED, [this](wxCommandEvent& event) {

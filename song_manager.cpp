@@ -96,6 +96,12 @@ void prev_song_switch(wxCommandEvent& event){
     play_song();
 }
 
+void reset_playlist(wxCommandEvent& event){
+    stop_song();
+    current_song = 0;
+    play_song();
+}
+
 void status_check(wxTimerEvent& event){
     if (playing_song && !song_paused && ma_sound_at_end(&sound)){ //Checks if song is at end and switches to next song.
         next_song_switch();
@@ -104,11 +110,11 @@ void status_check(wxTimerEvent& event){
         ma_sound_set_volume(&sound, MainFrame->volume_slider->GetValue()/100.0); //Sets volume of song based on slider value.
     }
     if (follow_song_progress && ma_sound_get_time_in_pcm_frames(&sound) > 0 && playing_song){ //Checks if song progress bar should be following the progress of the song. (the over 0 check is to prevent jumps from 0 to correct time on user setted progress.)
-        MainFrame->song_progress_bar->SetValue(ceil((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
+        MainFrame->song_progress_bar->SetValue(floor((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
     }
     else if (user_updated_progress){
         if (song_paused || !playing_song){
-            paused_pcm = floor((MainFrame->song_progress_bar->GetValue()/100.0)*song_total_pcm);
+            paused_pcm = ((MainFrame->song_progress_bar->GetValue()/100.0)*song_total_pcm);
             play_song();
         }
         song_toggle_status = true;
