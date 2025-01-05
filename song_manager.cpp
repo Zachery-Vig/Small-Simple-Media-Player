@@ -2,6 +2,7 @@
 
 //Scans user specified directory for songs and adds their paths to the songs array. Returns status of directory read, -1 for directory not existing, -2 for directory for no songs in directory, and 0 for success.
 int update_song_list(){
+    std::cout << songs_dir << std::endl;
     struct dirent *dir;
     DIR *d = opendir(songs_dir);
     if (d) {

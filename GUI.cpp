@@ -27,6 +27,7 @@ Input_Window::Input_Window(wxWindow* parent) : wxPopupTransientWindow(parent) {
 }
 
 void Input_Window::submit_song_dir(wxCommandEvent& event){
+    songs_dir[0] = '\0';
     strcat(songs_dir, song_dir_input->GetValue());
     int dir_status = update_song_list();
     if (dir_status == -1){
@@ -68,6 +69,16 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
     button_right->SetBackgroundColour(wxColor(0, 36, 94));
     button_stop->SetBackgroundColour(wxColor(0, 36, 94));
     button_reset->SetBackgroundColour(wxColor(0, 36, 94));
+    button_play->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    button_left->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    button_right->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    button_stop->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    button_reset->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));
+    button_play->SetForegroundColour(wxColor(255, 255, 255));
+    button_left->SetForegroundColour(wxColor(255, 255, 255));
+    button_right->SetForegroundColour(wxColor(255, 255, 255));
+    button_stop->SetForegroundColour(wxColor(255, 255, 255));
+    button_reset->SetForegroundColour(wxColor(255, 255, 255));
     //button_shuffle->SetBackgroundColour(wxColor(0, 36, 94));
     
     wxStaticText* title_text = new wxStaticText(panel, wxID_ANY, "Small Simple Song Player", wxPoint(0, 20), wxSize(800, 100), wxALIGN_CENTRE_HORIZONTAL);
