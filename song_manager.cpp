@@ -1,7 +1,7 @@
 #include "main.h"
 
 //Scans user specified directory for songs and adds their paths to the songs array. Returns status of directory read, -1 for directory not existing, -2 for directory for no songs in directory, and 0 for success.
-int update_song_list(const char songs_dir[100]){
+int update_song_list(){
     struct dirent *dir;
     DIR *d = opendir(songs_dir);
     if (d) {
@@ -9,13 +9,15 @@ int update_song_list(const char songs_dir[100]){
         while ((dir = readdir(d)) != NULL) {
             char file[100];
             strcpy(file, dir->d_name);
-            int name_length = strlen(file);
-            if (file[name_length-3] == 'm' && file[name_length-2] == 'p' && file[name_length-1] == '3'){
-                char full_dir[100] = "";
-                strcat(full_dir, songs_dir);
-                strcat(full_dir, "/");
-                strcat(full_dir, file);
-                strcat(songs[num_songs], full_dir);
+            //Gets the format of the
+            int name_len = strlen(file);
+            string format = "000";
+            for (int i = name_len-3; i < name_len; i++){ 
+                format[i-(name_len-3)] = std::tolower(file[i]);
+                std::cout << file[i] << std::endl;
+            }
+            if (format == "mp3" || format == "wav"){
+                strcat(songs[num_songs], file);
                 num_songs++;
             }
         }
@@ -32,8 +34,18 @@ int update_song_list(const char songs_dir[100]){
 
 void play_song(){
     MainFrame->song_name_text->SetLabel("Current Song:\n" + (string)songs[current_song]);
+    if ((current_song+1)==num_songs){
+        MainFrame->next_song_text->SetLabel("Next Song: " + (string)songs[0]);
+    } else {
+        MainFrame->next_song_text->SetLabel("Next Song: " + (string)songs[current_song+1]);
+    }
     MainFrame->button_play->SetLabel("Pause");
-    result = ma_sound_init_from_file(&engine, songs[current_song], 0, NULL, NULL, &sound);
+    //Takes the songs directory and the current song and creates a full path for the song to give to miniaudio.
+    char full_song_dir[200];
+    string full_song_dir_str = ((string)songs_dir + "/" + (string)songs[current_song]);
+    strcpy(full_song_dir, full_song_dir_str.c_str());
+
+    result = ma_sound_init_from_file(&engine, full_song_dir, 0, NULL, NULL, &sound);
     if (song_paused){
         ma_sound_seek_to_pcm_frame(&sound, paused_pcm);
     }
@@ -110,7 +122,7 @@ void status_check(wxTimerEvent& event){
         ma_sound_set_volume(&sound, MainFrame->volume_slider->GetValue()/100.0); //Sets volume of song based on slider value.
     }
     if (follow_song_progress && ma_sound_get_time_in_pcm_frames(&sound) > 0 && playing_song){ //Checks if song progress bar should be following the progress of the song. (the over 0 check is to prevent jumps from 0 to correct time on user setted progress.)
-        MainFrame->song_progress_bar->SetValue(floor((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
+        MainFrame->song_progress_bar->SetValue(ceil((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
     }
     else if (user_updated_progress){
         if (song_paused || !playing_song){

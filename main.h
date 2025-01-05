@@ -22,6 +22,7 @@ class Main_Frame : public wxFrame{
     public:
     Main_Frame(const wxString& title);
     wxStaticText* song_name_text;
+    wxStaticText* next_song_text;
     wxSlider* volume_slider;
     wxSlider* song_progress_bar;
     wxButton* button_play;
@@ -45,8 +46,8 @@ class Input_Window : public wxPopupTransientWindow {
 Main_Frame* MainFrame;
 Input_Window* song_dir_window;
 
-char songs[10][100];
-char song_dir[100];
+char songs[50][100];
+char songs_dir[150];
 int num_songs = 0;
 int current_song = 0;
 
