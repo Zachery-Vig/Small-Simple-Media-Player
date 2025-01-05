@@ -9,13 +9,14 @@ int update_song_list(){
         while ((dir = readdir(d)) != NULL) {
             char file[100];
             strcpy(file, dir->d_name);
-            //Gets the format of the
+            //Gets the format of the file.
             int name_len = strlen(file);
             string format = "000";
             for (int i = name_len-3; i < name_len; i++){ 
                 format[i-(name_len-3)] = std::tolower(file[i]);
                 std::cout << file[i] << std::endl;
             }
+
             if (format == "mp3" || format == "wav"){
                 strcat(songs[num_songs], file);
                 num_songs++;
