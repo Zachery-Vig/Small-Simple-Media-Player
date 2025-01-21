@@ -126,9 +126,12 @@ void status_check(wxTimerEvent& event){
     if (follow_song_progress && ma_sound_get_time_in_pcm_frames(&sound) > 0 && playing_song){ //Checks if song progress bar should be following the progress of the song. (the over 0 check is to prevent jumps from 0 to correct time on user setted progress.)
         MainFrame->song_progress_bar->SetValue(ceil((ma_sound_get_time_in_pcm_frames(&sound)/(float)song_total_pcm) * 100.0));
     }
-    else if (user_updated_progress){
+    else if (!wxGetMouseState().LeftIsDown() && !follow_song_progress){
+        std::cout << "AAAAAAAAAAA";
         if (song_paused || !playing_song){
-            paused_pcm = ((MainFrame->song_progress_bar->GetValue()/100.0)*song_total_pcm);
+            std::cout << "BBBBBBBBB" << std::endl;
+            paused_pcm = song_total_pcm * (MainFrame->song_progress_bar->GetValue()/100.0);
+            std::cout << MainFrame->song_progress_bar->GetValue() << std::endl;
             play_song();
         }
         song_toggle_status = true;

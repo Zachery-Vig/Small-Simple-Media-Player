@@ -111,17 +111,10 @@ Main_Frame::Main_Frame(const wxString& title): wxFrame(nullptr, wxID_ANY, title)
 
     //Tells Backend when user tries to manually update progress bar and to not set automatically.
     song_progress_bar->Bind(wxEVT_COMMAND_SLIDER_UPDATED, [this](wxCommandEvent& event) {
-            if (follow_song_progress){
+            if (follow_song_progress && wxGetMouseState().LeftIsDown()){
                 follow_song_progress = false;
                 pause_song();
             }
-       });
-
-    //Tells Backend user is done manually updating progress bar and to set song time to what user has specified.
-    song_progress_bar->Bind(wxEVT_LEFT_UP, [this](wxMouseEvent& event) {
-        if (!follow_song_progress){
-            user_updated_progress = true;
-        }
        });
 
     //Timer used for song end check, setting volume, etc. Originally I tried to do this through multi-threading but due too wxwidgets lack of thread safety (and me being not good at implementing multi-threading) I got a lot of seg faults.
